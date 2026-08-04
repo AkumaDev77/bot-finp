@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
+    <link rel="manifest" href="/static/manifest.json">
+
+    <meta name="theme-color" content="#00d9ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bot Financeiro</title>
@@ -563,6 +568,11 @@
         // Tratamento de erro global para fetch
         console.log('Bot Financeiro carregado! 🚀');
         console.log('URL base:', BASE_URL);
+    </script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/static/service-worker.js");
+        }
     </script>
 </body>
 </html>

@@ -3,7 +3,6 @@ from supabase import create_client
 from database.supabase_client import supabase
 from datetime import datetime, date
 import locale
-import yfinance as yf
 import re
 from difflib import get_close_matches
 
