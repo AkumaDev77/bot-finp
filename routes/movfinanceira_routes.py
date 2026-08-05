@@ -3,6 +3,7 @@ from supabase import create_client
 from database.supabase_client import supabase
 from datetime import datetime, date
 import locale
+import yfinance as yf
 import re
 from difflib import get_close_matches
 
@@ -141,6 +142,8 @@ ABREVIACOES = {
     
     # Rendas
     'salario': 'Remuneração Grupo Hinova',
+    'lucro 031' 'Lucro 031 Assados'
+    'lucro 031 assados' 'Lucro 031 Assados'
     'salário': 'Remuneração Grupo Hinova',
     'remuneracao': 'Remuneração Grupo Hinova',
     'remuneração': 'Remuneração Grupo Hinova',
