@@ -182,15 +182,15 @@ class CadastroCache:
         try:
             result = supabase.table('finp_cad').select('*').execute()
             
-            # Limpa caches
             self.cadastros = {}
             self.descricao_para_cod = {}
             
-            # Popula caches
             for item in result.data:
                 cod = item['cod']
                 self.cadastros[cod] = item
-                self.descricao_para_cod[item['descricao'].lower()] = cod
+                # NORMALIZAÇÃO COMPLETA: remove espaços extras e converte para minúsculas
+                desc_normalizada = ' '.join(item['descricao'].lower().split())
+                self.descricao_para_cod[desc_normalizada] = cod
             
             print(f"✅ Cadastros carregados: {len(self.cadastros)} itens")
             return True
@@ -204,8 +204,9 @@ class CadastroCache:
     
     def buscar_por_descricao_exata(self, descricao):
         """Busca cadastro pela descrição exata"""
-        descricao_lower = descricao.lower().strip()
-        cod = self.descricao_para_cod.get(descricao_lower)
+        # NORMALIZAÇÃO COMPLETA: remove espaços extras e converte para minúsculas
+        descricao_normalizada = ' '.join(descricao.lower().strip().split())
+        cod = self.descricao_para_cod.get(descricao_normalizada)
         if cod:
             return self.cadastros.get(cod)
         return None
