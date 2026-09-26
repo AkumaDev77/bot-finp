@@ -423,15 +423,78 @@ def processar_mensagem():
         })
     
     if mensagem.lower() == '/cadastros':
-        total = len(cadastro_cache.cadastros)
-        return jsonify({
-            'type': 'mensagem',
-            'conteudo': {
-                'texto': f'📚 <b>Total de cadastros:</b> {total}<br><br>Use /recarregar para atualizar o cache',
-                'tipo': 'sistema'
-            }
-        })
-    
+        try:
+            # Busca todos os cadastros ordenados por tipo e descrição
+            result = supabase.table('finp_cad').select('tipo, descricao').order('tipo').order('descricao').execute()
+            
+            if not result.data:
+                return jsonify({
+                    'type': 'mensagem',
+                    'conteudo': {
+                        'texto': '📭 Nenhum cadastro encontrado.',
+                        'tipo': 'sistema'
+                    }
+                })
+            
+            # Separa em Entradas e Saídas
+            entradas = []
+            saidas = []
+            
+            for item in result.data:
+                tipo = (item.get('tipo') or '').strip()
+                descricao = (item.get('descricao') or '').strip()
+                
+                if not descricao:
+                    continue
+                
+                if tipo == 'Entrada':
+                    entradas.append(descricao)
+                elif tipo == 'Saída':
+                    saidas.append(descricao)
+            
+            # Remove duplicatas mantendo a ordem
+            entradas = sorted(set(entradas))
+            saidas = sorted(set(saidas))
+            
+            # Monta a mensagem
+            texto = "📚 <b>Cadastros Disponíveis</b><br><br>"
+            
+            texto += f"📥 <b>ENTRADAS</b> ({len(entradas)})<br>"
+            if entradas:
+                for desc in entradas:
+                    texto += f"&nbsp;&nbsp;• {desc}<br>"
+            else:
+                texto += "&nbsp;&nbsp;<i>Nenhuma entrada cadastrada</i><br>"
+            
+            texto += "<br>"
+            
+            texto += f"📤 <b>SAÍDAS</b> ({len(saidas)})<br>"
+            if saidas:
+                for desc in saidas:
+                    texto += f"&nbsp;&nbsp;• {desc}<br>"
+            else:
+                texto += "&nbsp;&nbsp;<i>Nenhuma saída cadastrada</i><br>"
+            
+            texto += f"<br>━━━━━━━━━━━━━━━━━━<br>"
+            texto += f"📊 <b>Total:</b> {len(entradas) + len(saidas)} cadastros"
+            
+            return jsonify({
+                'type': 'mensagem',
+                'conteudo': {
+                    'texto': texto,
+                    'tipo': 'lista'
+                }
+            })
+        except Exception as e:
+            print(f"❌ Erro ao listar cadastros: {e}")
+            return jsonify({
+                'type': 'mensagem',
+                'conteudo': {
+                    'texto': f'❌ Erro ao carregar cadastros: {str(e)}',
+                    'tipo': 'erro'
+                }
+            })
+        
     if mensagem.lower() == '/ajuda':
         return jsonify({
             'type': 'mensagem',
